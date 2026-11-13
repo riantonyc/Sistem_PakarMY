@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-canvas: #090A0D;
+    --bg-surface: #111318;
+    --bg-elevated: #191D24;
+    --border-grid: #262B36;
+    --border-focus: #3F4756;
+    --text-primary: #F4F6F8;
+    --text-muted: #8A94A6;
+    --accent-red: #E61E4D;
+    --accent-blue: #008ED6;
+    --accent-gold: #F5A623;
+    --accent-green: #009E52;
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+  }
+}
+
+/* Monospace Tabular Numbers Enforcement (Anti-Jitter) */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hairline Grid Structural Borders */
+.border-hairline {
+  border: 1px solid #262B36;
+}
+
+.border-hairline-t {
+  border-top: 1px solid #262B36;
+}
+
+.border-hairline-b {
+  border-bottom: 1px solid #262B36;
+}
+
+.border-hairline-l {
+  border-left: 1px solid #262B36;
+}
+
+.border-hairline-r {
+  border-right: 1px solid #262B36;
+}
+
+/* Tactical Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090A0D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262B36;
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3F4756;
+}
+

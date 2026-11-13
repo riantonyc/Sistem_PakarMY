@@ -1,0 +1,230 @@
+// Prisma Schema for Sistem Pakar Kesiapan Atlet Muaythai (Pengkot Pontianak)
+// Compatible with PostgreSQL (Neon, Supabase, Vercel Postgres)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  PELATIH
+  PAKAR
+  ATLET
+}
+
+enum WeightClass {
+  MINI_FLYWEIGHT_45KG     // 45.0 kg
+  LIGHT_FLYWEIGHT_48KG    // 48.0 kg
+  FLYWEIGHT_51KG          // 51.0 kg
+  BANTAMWEIGHT_54KG       // 54.0 kg
+  FEATHERWEIGHT_57KG      // 57.0 kg
+  LIGHTWEIGHT_60KG        // 60.0 kg
+  LIGHT_WELTERWEIGHT_63_5KG // 63.5 kg
+  WELTERWEIGHT_67KG       // 67.0 kg
+  LIGHT_MIDDLEWEIGHT_71KG // 71.0 kg
+  MIDDLEWEIGHT_75KG       // 75.0 kg
+  LIGHT_HEAVYWEIGHT_81KG  // 81.0 kg
+  HEAVYWEIGHT_OVER_81KG   // > 81.0 kg
+}
+
+enum AttributeType {
+  BENEFIT
+  COST
+}
+
+enum ReadinessCategory {
+  SIAP                  // Ready
+  SIAP_DENGAN_CATATAN   // Ready with notes / conditional
+  BELUM_SIAP            // Not ready
+}
+
+enum PeriodStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          UserRole       @default(PELATIH)
+  phoneNumber   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  athleteProfile      Athlete?
+  evaluatedAthletes   AthleteAssessment[] @relation("EvaluatorAssessments")
+  ahpConfigs          FuzzyAhpConfig[]
+  auditLogs           AuditLog[]
+
+  @@map("users")
+}
+
+model Athlete {
+  id                String         @id @default(uuid())
+  userId            String?        @unique
+  user              User?          @relation(fields: [userId], references: [id])
+  nik               String         @unique
+  fullName          String
+  gender            String         // "MALE" | "FEMALE"
+  birthDate         DateTime
+  weight            Float          // in kg
+  height            Float          // in cm
+  weightClass       WeightClass
+  campName          String         // Sasana / Klub
+  matchRecordWins   Int            @default(0)
+  matchRecordLosses Int            @default(0)
+  matchRecordDraws  Int            @default(0)
+  hasActiveInjury   Boolean        @default(false)
+  injuryNotes       String?
+  attendanceRate    Float          @default(100.0) // Kehadiran latihan %
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Relations
+  assessments       AthleteAssessment[]
+
+  @@map("athletes")
+}
+
+model Criterion {
+  id              String        @id @default(uuid())
+  code            String        @unique // C1, C2, C3, C4, C5, ...
+  name            String
+  category        String        // "FISIK", "TEKNIK", "DISIPLIN", "PENGALAMAN"
+  unit            String        // "W/kg", "Skala 1-5", "ml/kg/min", "Partai", "%"
+  scaleMin        Float
+  scaleMax        Float
+  attributeType   AttributeType @default(BENEFIT)
+  isMandatory     Boolean       @default(false)
+  minPassingScore Float?        // Batas minimal jika kriteria wajib
+  description     String?
+  version         Int           @default(1)
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+
+  // Relations
+  cfRules         CfRule[]
+
+  @@map("criteria")
+}
+
+model FuzzyAhpConfig {
+  id                String    @id @default(uuid())
+  version           Int
+  expertId          String
+  expert            User      @relation(fields: [expertId], references: [id])
+  consistencyRatio  Float     // CR must be < 0.1
+  isCrValid         Boolean   @default(false)
+  pairwiseMatrix    Json      // TFN pairwise matrix (l, m, u)
+  crispWeights      Json      // Final normalized weights { C1: 0.35, C2: 0.25, ... }
+  isActive          Boolean   @default(false)
+  expertNotes       String?
+  signedAt          DateTime?
+  createdAt         DateTime  @default(now())
+
+  @@map("fuzzy_ahp_configs")
+}
+
+model AssessmentPeriod {
+  id          String              @id @default(uuid())
+  name        String              // Misal: "Seleksi Kejurprov Kalbar 2026"
+  targetEvent String              // Nama kejuaraan sasaran
+  startDate   DateTime
+  endDate     DateTime
+  status      PeriodStatus        @default(DRAFT)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  // Relations
+  assessments AthleteAssessment[]
+
+  @@map("assessment_periods")
+}
+
+model AthleteAssessment {
+  id                  String             @id @default(uuid())
+  periodId            String
+  period              AssessmentPeriod   @relation(fields: [periodId], references: [id])
+  athleteId           String
+  athlete             Athlete            @relation(fields: [athleteId], references: [id])
+  evaluatorId         String
+  evaluator           User               @relation("EvaluatorAssessments", fields: [evaluatorId], references: [id])
+  
+  // Input raw metrics
+  rawScores           Json               // { C1: 14.8, C2: 4, C3: 52.5, C4: 8, C5: 92.0 }
+  hasActiveInjury     Boolean            @default(false)
+  attendanceRate      Float              @default(100.0)
+
+  // TOPSIS Computation Results
+  normalizedScores    Json               // Vector normalized values
+  weightedScores      Json               // Normalized * FAHP weights
+  distancePositive    Float              // D+ (distance to ideal solution)
+  distanceNegative    Float              // D- (distance to anti-ideal solution)
+  closenessScore      Float              // Ci = D- / (D+ + D-)
+
+  // Certainty Factor Results
+  certaintyFactor     Float              // Combined CF in [-1.0, 1.0]
+  triggeredRules      Json               // Rules activated during CF aggregation
+
+  // Final Deterministic Decision Engine
+  decisionCategory    ReadinessCategory
+  isBorderlineCase    Boolean            @default(false)
+  borderlineNotes     String?
+
+  // LLM Explanation Layer (Non-binding, read-only)
+  explanationText     String?            // Deterministic template or validated LLM narrative
+  explanationModel    String?            // e.g. "gemini-1.5-pro / local-9router"
+  explanationVerified Boolean            @default(true)
+
+  // Workflow & Ringside Lock
+  isLocked            Boolean            @default(false)
+  lockedAt            DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@unique([periodId, athleteId])
+  @@map("athlete_assessments")
+}
+
+model CfRule {
+  id                 String             @id @default(uuid())
+  code               String             @unique // R-01, R-02, ...
+  criterionId        String?
+  criterion          Criterion?         @relation(fields: [criterionId], references: [id])
+  conditionOperator  String             // ">=", "<=", "==", "<", ">"
+  thresholdValue     Float
+  cfExpert           Float              // Expert belief value [-1.0 to 1.0]
+  description        String             // Misal: "Kehadiran >= 80% membuktikan komitmen disiplin"
+  hypothesisCategory ReadinessCategory
+  isActive           Boolean            @default(true)
+  createdAt          DateTime           @default(now())
+
+  @@map("cf_rules")
+}
+
+model AuditLog {
+  id            String    @id @default(uuid())
+  action        String    // CREATE, UPDATE, LOCK, CALCULATION_RUN
+  actorId       String?
+  actor         User?     @relation(fields: [actorId], references: [id])
+  actorRole     String
+  entityName    String    // ATHLETE, FAHP_CONFIG, ASSESSMENT, etc.
+  entityId      String
+  previousState Json?
+  newState      Json?
+  ipAddress     String?
+  timestamp     DateTime  @default(now())
+
+  @@map("audit_logs")
+}
+
