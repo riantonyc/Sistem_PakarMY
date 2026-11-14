@@ -103,7 +103,7 @@ export const SAMPLE_FAHP_MATRIX: PairwiseMatrixFuzzy = {
   ],
 };
 
-// 3. Sample 3 Athletes in 63.5 kg Light Welterweight Class
+// 3. Sample 5 Athletes in 63.5 kg Light Welterweight Class Covering All Decision Engine Possibilities
 export const SAMPLE_ATHLETES: AthleteInput[] = [
   {
     id: "ATH-001",
@@ -113,11 +113,11 @@ export const SAMPLE_ATHLETES: AthleteInput[] = [
     attendanceRate: 94.0,
     hasActiveInjury: false,
     rawScores: {
-      C1: 15.2, // 15.2 W/kg
-      C2: 4.5,  // Skala 4.5/5
-      C3: 56.0, // 56 ml/kg/min
-      C4: 8,    // 8 partai
-      C5: 94.0, // 94%
+      C1: 15.2, // 15.2 W/kg (Daya Anaerobik Relatif Prima)
+      C2: 4.5,  // Skala 4.5/5 (Teknik 8 Organ Sangat Baik)
+      C3: 56.0, // 56.0 ml/kg/min (Stamina VO2max Tinggi)
+      C4: 8,    // 8 partai tanding resmi
+      C5: 94.0, // 94% Kehadiran TC
     },
   },
   {
@@ -125,30 +125,61 @@ export const SAMPLE_ATHLETES: AthleteInput[] = [
     name: "Bagus Pratama",
     weightClass: "Light Welterweight (63.5 kg)",
     weightKg: 63.1,
-    attendanceRate: 82.0,
+    attendanceRate: 88.0,
     hasActiveInjury: true,
     injuryDescription: "Sprain ankle kanan derajat 1 (masih masa rehabilitasi)",
+    injuryNotes: "Sprain ankle kanan derajat 1 (masih masa rehabilitasi)",
     rawScores: {
       C1: 13.8, // 13.8 W/kg
       C2: 4.0,  // Skala 4.0/5
       C3: 51.5, // 51.5 ml/kg/min
-      C4: 4,    // 4 partai
-      C5: 82.0, // 82%
+      C4: 4,    // 4 partai tanding
+      C5: 88.0, // 88% Kehadiran TC
     },
   },
   {
     id: "ATH-003",
+    name: "Doni Saputra",
+    weightClass: "Light Welterweight (63.5 kg)",
+    weightKg: 63.5,
+    attendanceRate: 76.0,
+    hasActiveInjury: false,
+    rawScores: {
+      C1: 12.2, // 12.2 W/kg (Kapasitas menengah)
+      C2: 3.8,  // Skala 3.8/5 (Teknik cukup, di atas batas 3.0)
+      C3: 48.0, // 48.0 ml/kg/min (Aerobik moderat)
+      C4: 3,    // 3 partai tanding
+      C5: 76.0, // 76% Kehadiran TC (Kondisional)
+    },
+  },
+  {
+    id: "ATH-004",
     name: "Dedi Kusnadi",
     weightClass: "Light Welterweight (63.5 kg)",
     weightKg: 63.5,
-    attendanceRate: 58.0,
+    attendanceRate: 90.0,
     hasActiveInjury: false,
     rawScores: {
-      C1: 9.4,  // 9.4 W/kg
-      C2: 2.8,  // Skala 2.8/5 (Gagal batas kriteria wajib >= 3.0)
-      C3: 44.0, // 44 ml/kg/min
-      C4: 1,    // 1 partai
-      C5: 58.0, // 58%
+      C1: 14.5, // 14.5 W/kg (Daya fisik tinggi)
+      C2: 2.8,  // Skala 2.8/5 (Gagal batas kriteria wajib C2 >= 3.0 -> Hard Gate K-06)
+      C3: 52.0, // 52.0 ml/kg/min
+      C4: 2,    // 2 partai
+      C5: 90.0, // 90% Kehadiran TC
+    },
+  },
+  {
+    id: "ATH-005",
+    name: "Eko Wahyudi",
+    weightClass: "Light Welterweight (63.5 kg)",
+    weightKg: 65.2,
+    attendanceRate: 52.0,
+    hasActiveInjury: false,
+    rawScores: {
+      C1: 9.2,  // 9.2 W/kg (Daya rendah)
+      C2: 3.1,  // Skala 3.1/5
+      C3: 42.0, // 42.0 ml/kg/min (Stamina rendah)
+      C4: 1,    // 1 partai (Pemula)
+      C5: 52.0, // 52% Kehadiran TC (Sangat indisipliner)
     },
   },
 ];
