@@ -8,19 +8,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#090A0D", // Base Canvas (Ring Mat Black)
+        canvas: "rgb(var(--canvas) / <alpha-value>)",
         surface: {
-          DEFAULT: "#111318", // Carbon Corner Surface
-          elevated: "#191D24", // Active / Hover Surface
-          dim: "#0D0F14",
+          DEFAULT: "rgb(var(--surface) / <alpha-value>)",
+          elevated: "rgb(var(--surface-elevated) / <alpha-value>)",
+          dim: "rgb(var(--surface-dim) / <alpha-value>)",
         },
         border: {
-          grid: "#262B36", // 1px Hairline Structural Grid
-          focus: "#3F4756", // Active selection border
+          grid: "rgb(var(--border-grid) / <alpha-value>)",
+          focus: "rgb(var(--border-focus) / <alpha-value>)",
         },
         primary: {
-          DEFAULT: "#F4F6F8", // High-Contrast Text
-          muted: "#8A94A6", // Steel Silver Metadata
+          DEFAULT: "rgb(var(--text-primary) / <alpha-value>)",
+          muted: "rgb(var(--text-muted) / <alpha-value>)",
         },
         accent: {
           red: "#E61E4D", // Red Corner (Left HUD, Danger, Live Round)

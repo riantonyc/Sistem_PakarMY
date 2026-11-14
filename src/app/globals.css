@@ -4,25 +4,36 @@
 
 @layer base {
   :root {
-    --bg-canvas: #090A0D;
-    --bg-surface: #111318;
-    --bg-elevated: #191D24;
-    --border-grid: #262B36;
-    --border-focus: #3F4756;
-    --text-primary: #F4F6F8;
-    --text-muted: #8A94A6;
-    --accent-red: #E61E4D;
-    --accent-blue: #008ED6;
-    --accent-gold: #F5A623;
-    --accent-green: #009E52;
+    /* TEMA TERANG (Athletic Arena Day Mode) */
+    --canvas: 245 247 250;
+    --surface: 255 255 255;
+    --surface-elevated: 248 250 252;
+    --surface-dim: 241 245 249;
+    --border-grid: 226 232 240;
+    --border-focus: 203 213 225;
+    --text-primary: 15 23 42;
+    --text-muted: 100 116 139;
+  }
+
+  .dark {
+    /* TEMA GELAP (Ring Mat Black & Carbon Corner) */
+    --canvas: 9 10 13;
+    --surface: 17 19 24;
+    --surface-elevated: 25 29 36;
+    --surface-dim: 13 15 20;
+    --border-grid: 38 43 54;
+    --border-focus: 63 71 86;
+    --text-primary: 244 246 248;
+    --text-muted: 138 148 166;
   }
 
   body {
-    background-color: var(--bg-canvas);
-    color: var(--text-primary);
+    background-color: rgb(var(--canvas));
+    color: rgb(var(--text-primary));
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     letter-spacing: -0.01em;
     overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
@@ -33,23 +44,23 @@
 
 /* Hairline Grid Structural Borders */
 .border-hairline {
-  border: 1px solid #262B36;
+  border: 1px solid rgb(var(--border-grid));
 }
 
 .border-hairline-t {
-  border-top: 1px solid #262B36;
+  border-top: 1px solid rgb(var(--border-grid));
 }
 
 .border-hairline-b {
-  border-bottom: 1px solid #262B36;
+  border-bottom: 1px solid rgb(var(--border-grid));
 }
 
 .border-hairline-l {
-  border-left: 1px solid #262B36;
+  border-left: 1px solid rgb(var(--border-grid));
 }
 
 .border-hairline-r {
-  border-right: 1px solid #262B36;
+  border-right: 1px solid rgb(var(--border-grid));
 }
 
 /* Tactical Scrollbar */
@@ -59,15 +70,13 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #090A0D;
+  background: rgb(var(--canvas));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #262B36;
-  border-radius: 0px;
+  background: rgb(var(--border-grid));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3F4756;
+  background: rgb(var(--border-focus));
 }
-

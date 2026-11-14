@@ -375,3 +375,4 @@ Tabel berikut menunjukkan keterlacakan antara kebutuhan sistem (*System Requirem
 ---
 **PENGURUS KOTA MUAYTHAI KOTA PONTIANAK**  
 *Laporan Kebutuhan Sistem & Arsitektur Teknologi Resmi — Tahun Anggaran 2026*
+
